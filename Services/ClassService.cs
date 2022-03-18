@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Smart_ELearning.Data;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Smart_ELearning.Services
 {
@@ -32,13 +30,15 @@ namespace Smart_ELearning.Services
             else
             {
                 var classFromDb = _context.ClassModels.Find(model.Id);
-                if (classFromDb == null) throw new Exception($"Could not found class id{model.Id}");
-                else
+                if (classFromDb == null)
                 {
-                    _context.Entry<ClassModel>(classFromDb).State = EntityState.Detached;
-                    _context.Entry<ClassModel>(model).State = EntityState.Modified;
+                    throw new Exception($"Could not found class id{model.Id}");
                 }
+
+                _context.Entry(classFromDb).State = EntityState.Detached;
+                _context.Entry(model).State = EntityState.Modified;
             }
+
             return _context.SaveChanges();
         }
 

@@ -14,14 +14,14 @@
         </div>
         <div class="col-8 pt-4">
             <div class="form-group row">
-                <input type="hidden" asp-for="ScheduleId" />
+                <input type="hidden" asp-for="ScheduleId"/>
             </div>
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="Title"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="Title" class="form-control" />
+                    <input asp-for="Title" class="form-control"/>
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
             </div>
@@ -43,13 +43,14 @@
             <div class="form-group row">
                 <div class="col-8 offset-4">
 
-                    <partial name="_CreateAndBackToListButton" />
+                    <partial name="_CreateAndBackToListButton"/>
                 </div>
             </div>
         </div>
     </div>
 </form>
+
 @section Scripts
 {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }

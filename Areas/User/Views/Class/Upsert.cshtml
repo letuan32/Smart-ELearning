@@ -21,7 +21,7 @@
                     <label asp-for="Name"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="Name" autocomplete="off" class="form-control" />
+                    <input asp-for="Name" autocomplete="off" class="form-control"/>
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
             </div>
@@ -30,18 +30,19 @@
 
                     @if (Model.Id != 0)
                     {
-                        <partial name="_EditAndBackToListButton" model="Model.Id" />
+                        <partial name="_EditAndBackToListButton" model="Model.Id"/>
                     }
                     else
                     {
-                        <partial name="_CreateAndBackToListButton" />
+                        <partial name="_CreateAndBackToListButton"/>
                     }
                 </div>
             </div>
         </div>
     </div>
 </form>
+
 @section Scripts
 {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }

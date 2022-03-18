@@ -1,9 +1,6 @@
-﻿using Smart_ELearning.Models;
-using Smart_ELearning.ViewModels.AccountViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Smart_ELearning.ViewModels.AccountViewModels;
 
 namespace Smart_ELearning.Services.Interfaces
 {

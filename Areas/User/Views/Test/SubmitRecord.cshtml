@@ -4,11 +4,11 @@
     ViewData["Title"] = "Smart-Elearning";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{ var index = 1;}
+@{ var index = 1; }
 <div>
     <h4>Grade: @ViewBag.TotalGrade/100 </h4>
 
-    <hr />
+    <hr/>
 
     <div class="container">
         @foreach (var item in Model)
@@ -59,7 +59,7 @@
                     <span style="white-space: pre-line">@item.StudentAnswer</span>
                 </div>
             </div>
-            <hr style="font-size:5px;" />
+            <hr style="font-size:5px;"/>
         }
     </div>
 </div>

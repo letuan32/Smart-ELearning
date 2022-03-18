@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Smart_ELearning.Models.Enums
+﻿namespace Smart_ELearning.Models.Enums
 {
     public enum AnswerChoice
     {
@@ -11,6 +6,6 @@ namespace Smart_ELearning.Models.Enums
         A,
         B,
         C,
-        D,
+        D
     }
 }

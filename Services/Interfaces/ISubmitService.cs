@@ -1,6 +1,5 @@
-﻿using Smart_ELearning.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Smart_ELearning.Models;
 
 namespace Smart_ELearning.Services.Interfaces
 {

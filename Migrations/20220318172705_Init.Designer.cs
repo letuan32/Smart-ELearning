@@ -10,8 +10,8 @@ using Smart_ELearning.Data;
 namespace Smart_ELearning.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210921142014_new")]
-    partial class @new
+    [Migration("20220318172705_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -241,6 +241,30 @@ namespace Smart_ELearning.Migrations
                     b.ToTable("Classes");
                 });
 
+            modelBuilder.Entity("Smart_ELearning.Models.IpInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Ip")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsBlock")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LimitAccount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IpInfos");
+                });
+
             modelBuilder.Entity("Smart_ELearning.Models.QuestionModel", b =>
                 {
                     b.Property<int>("Id")
@@ -396,7 +420,7 @@ namespace Smart_ELearning.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentAnswer")
+                    b.Property<int?>("StudentAnswer")
                         .HasColumnType("int");
 
                     b.Property<int>("SubmitId")

@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Smart_ELearning.Data;
-using Smart_ELearning.Models;
-using Smart_ELearning.Services.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Smart_ELearning.Data;
+using Smart_ELearning.Models;
+using Smart_ELearning.Services.Interfaces;
 
 namespace Smart_ELearning.Services
 {
@@ -33,13 +33,6 @@ namespace Smart_ELearning.Services
             return data;
         }
 
-        public async Task<SubjectModel> GetById(int id)
-        {
-            var model = await _context.SubjectModels.FindAsync(id);
-            if (model == null) throw new Exception("Not found");
-            return model;
-        }
-
         public async Task<int> Upsert(SubjectModel model)
         {
             if (model.Id == 0)
@@ -49,13 +42,15 @@ namespace Smart_ELearning.Services
             else
             {
                 var subjectFromDb = await _context.SubjectModels.FindAsync(model.Id);
-                if (subjectFromDb == null) throw new Exception($"Could not found class id{model.Id}");
-                else
+                if (subjectFromDb == null)
                 {
-                    _context.Entry<SubjectModel>(subjectFromDb).State = EntityState.Detached;
-                    _context.Entry<SubjectModel>(model).State = EntityState.Modified;
+                    throw new Exception($"Could not found class id{model.Id}");
                 }
+
+                _context.Entry(subjectFromDb).State = EntityState.Detached;
+                _context.Entry(model).State = EntityState.Modified;
             }
+
             return await _context.SaveChangesAsync();
         }
 
@@ -71,6 +66,13 @@ namespace Smart_ELearning.Services
         {
             var data = _context.SubjectModels.ToList();
             return data;
+        }
+
+        public async Task<SubjectModel> GetById(int id)
+        {
+            var model = await _context.SubjectModels.FindAsync(id);
+            if (model == null) throw new Exception("Not found");
+            return model;
         }
     }
 }

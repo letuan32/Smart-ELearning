@@ -1,19 +1,16 @@
-﻿using Smart_ELearning.Services.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Smart_ELearning.Models;
-
 using Smart_ELearning.Data;
+using Smart_ELearning.Models;
 using Smart_ELearning.Models.Enums;
+using Smart_ELearning.Services.Interfaces;
 using Smart_ELearning.ViewModels;
 using Smart_ELearning.ViewModels.Test;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace Smart_ELearning.Services
 {
@@ -50,11 +47,9 @@ namespace Smart_ELearning.Services
             {
                 var testFromDb = _context.TestModels.Find(model.TestModel.Id);
                 if (testFromDb == null) throw new Exception($"Could not found class id{model.TestModel.Id}");
-                else
-                {
-                    _context.Entry<TestModel>(testFromDb).State = EntityState.Detached;
-                    _context.Entry<TestModel>(model.TestModel).State = EntityState.Modified;
-                }
+
+                _context.Entry(testFromDb).State = EntityState.Detached;
+                _context.Entry(model.TestModel).State = EntityState.Modified;
             }
 
             return _context.SaveChanges();
@@ -72,7 +67,7 @@ namespace Smart_ELearning.Services
         public TestModel GetById(int? Id)
         {
             var testFromDb = _context.TestModels.Find(Id);
-            if (testFromDb == null) throw new Exception($"Not Found");
+            if (testFromDb == null) throw new Exception("Not Found");
             return testFromDb;
         }
 
@@ -88,7 +83,7 @@ namespace Smart_ELearning.Services
             var questionQuery = _context.QuestionModels
                 .Where(x => x.TestId == testId).AsQueryable();
             var rnd = new Random();
-            var listQuestion = questionQuery.Select(x => new StudentQuestionVm()
+            var listQuestion = questionQuery.Select(x => new StudentQuestionVm
             {
                 Id = x.Id,
                 Score = x.Score,
@@ -135,14 +130,11 @@ namespace Smart_ELearning.Services
             // Get User IP
 
             foreach (var item in request.QuestionsResult)
-            {
                 if (item.StudentAnswer != null)
-                {
-                    if (item.StudentAnswer == item.CorrectAnswer) noOfCorrect++;
-                }
-            }
+                    if (item.StudentAnswer == item.CorrectAnswer)
+                        noOfCorrect++;
 
-            var objsub = new SubmitModel()
+            var objsub = new SubmitModel
             {
                 NumberOfCorrectAnswer = noOfCorrect,
                 TestId = request.TestId,
@@ -159,14 +151,15 @@ namespace Smart_ELearning.Services
             await _context.SaveChangesAsync();
             foreach (var item in request.QuestionsResult)
             {
-                var submitDetail = new SubmitDetailModel()
+                var submitDetail = new SubmitDetailModel
                 {
                     QuestionId = item.Id,
                     StudentAnswer = item.StudentAnswer.HasValue ? item.StudentAnswer.Value : AnswerChoice.Null,
-                    SubmitId = objsub.Id,
+                    SubmitId = objsub.Id
                 };
                 _context.SubmitDetailModels.Add(submitDetail);
             }
+
             await _context.SaveChangesAsync();
             var submitId = objsub.Id;
             return objsub;
@@ -180,25 +173,22 @@ namespace Smart_ELearning.Services
             var questions = _context.QuestionModels.Where(x => x.TestId == submit.TestId).ToList();
 
             foreach (var question in questions)
-            {
-                foreach (var submitDetail in submitDetails)
+            foreach (var submitDetail in submitDetails)
+                if (submitDetail.QuestionId == question.Id)
                 {
-                    if (submitDetail.QuestionId == question.Id)
+                    var model = new SubmitDetailVm
                     {
-                        var model = new SubmitDetailVm()
-                        {
-                            QuestionContent = question.Content,
-                            ChoiceA = question.ChoiceA,
-                            ChoiceB = question.ChoiceB,
-                            ChoiceC = question.ChoiceC,
-                            ChoiceD = question.ChoiceD,
-                            CorrectAnswer = question.CorrectAnswer,
-                            StudentAnswer = submitDetail.StudentAnswer
-                        };
-                        models.Add(model);
-                    }
+                        QuestionContent = question.Content,
+                        ChoiceA = question.ChoiceA,
+                        ChoiceB = question.ChoiceB,
+                        ChoiceC = question.ChoiceC,
+                        ChoiceD = question.ChoiceD,
+                        CorrectAnswer = question.CorrectAnswer,
+                        StudentAnswer = submitDetail.StudentAnswer
+                    };
+                    models.Add(model);
                 }
-            }
+
             return models.ToList();
         }
 
@@ -210,25 +200,26 @@ namespace Smart_ELearning.Services
             foreach (var item in query)
             {
                 var student = _context.AppUserModels.Find(item.UserId);
-                var model = new TestResult()
+                var model = new TestResult
                 {
                     Id = item.Id,
-                    SpecificId = "SL" + student.SpecificId.ToString(),
-                    NoOfCorrect = item.NumberOfCorrectAnswer.ToString() + "/" + test.NumberOfQuestion.ToString(),
+                    SpecificId = "SL" + student.SpecificId,
+                    NoOfCorrect = item.NumberOfCorrectAnswer + "/" + test.NumberOfQuestion,
                     StudentName = student.FullName,
                     TotalGrade = item.TotalGrade,
                     UserId = item.UserId,
-                    IpAdress = item.UserIp,
+                    IpAdress = item.UserIp
                 };
                 result.Add(model);
             }
+
             return result;
         }
 
         public int ChangeTestStatus(int id)
         {
-            var test = this.GetById(id);
-            if (test.Status == true)
+            var test = GetById(id);
+            if (test.Status)
                 test.Status = false;
             else
                 test.Status = true;

@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Smart_ELearning.Data;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
-
-using Microsoft.AspNetCore.Identity;
 using Smart_ELearning.ViewModels.AccountViewModels;
-using System.Text.RegularExpressions;
 
 namespace Smart_ELearning.Services
 {
     public class StudentService : IStudentService
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUserModel> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<AppUserModel> _userManager;
 
         public StudentService(
             UserManager<AppUserModel> userManager,
@@ -38,7 +36,7 @@ namespace Smart_ELearning.Services
             if (lastedStudentAccount == null || lastedStudentAccount.SpecificId < 100) specificId = 101;
             else specificId = lastedStudentAccount.SpecificId + 1;
 
-            var fullNameToEmail = String.Concat(request.FullName.Where(c => !Char.IsWhiteSpace(c)));
+            var fullNameToEmail = string.Concat(request.FullName.Where(c => !char.IsWhiteSpace(c)));
             fullNameToEmail = fullNameToEmail.ToLower();
             fullNameToEmail = Regex.Replace(fullNameToEmail, "à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ|/g", "a");
             fullNameToEmail = Regex.Replace(fullNameToEmail, "è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ|/g", "e");
@@ -49,18 +47,18 @@ namespace Smart_ELearning.Services
             fullNameToEmail = Regex.Replace(fullNameToEmail, "đ", "d");
             account.FullName = request.FullName;
             account.SpecificId = specificId;
-            account.Email = fullNameToEmail + specificId.ToString() + "@smartlearning.com";
+            account.Email = fullNameToEmail + specificId + "@smartlearning.com";
             account.EmailConfirmed = true;
             account.PhoneNumberConfirmed = true;
             account.NormalizedUserName = request.FullName.ToUpper();
-            account.UserName = fullNameToEmail + specificId.ToString() + "@smartlearning.com";
+            account.UserName = fullNameToEmail + specificId + "@smartlearning.com";
 
-            IdentityResult result = _userManager.CreateAsync(account, "Default@123").GetAwaiter().GetResult();
+            var result = _userManager.CreateAsync(account, "Default@123").GetAwaiter().GetResult();
             if (!_roleManager.RoleExistsAsync("Student").Result)
             {
-                var role = new IdentityRole()
+                var role = new IdentityRole
                 {
-                    Name = "Student",
+                    Name = "Student"
                 };
                 _roleManager.CreateAsync(role).GetAwaiter().GetResult();
             }
@@ -69,7 +67,7 @@ namespace Smart_ELearning.Services
             //await _context.SaveChangesAsync();
             // Tạo tạm cái role
 
-            var studentInClass = new StudentInClassModel()
+            var studentInClass = new StudentInClassModel
             {
                 ClassId = request.ClassId,
                 UserId = account.Id
@@ -84,10 +82,10 @@ namespace Smart_ELearning.Services
             var query = _context.StudentInClassModels.Include(x => x.AppUserModel).Include(x => x.ClassModel)
                 .Where(x => x.ClassId == classId).AsQueryable();
 
-            var listStudent = await query.Select(x => new StudentInClassVM()
+            var listStudent = await query.Select(x => new StudentInClassVM
             {
                 Id = x.AppUserModel.Id,
-                SpecificId = "SL" + x.AppUserModel.SpecificId.ToString(),
+                SpecificId = "SL" + x.AppUserModel.SpecificId,
                 FullName = x.AppUserModel.FullName,
                 Email = x.AppUserModel.Email
             }).ToListAsync();
