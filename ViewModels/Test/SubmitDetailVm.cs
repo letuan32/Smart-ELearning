@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Smart_ELearning.Models.Enums;
+﻿using Smart_ELearning.Models.Enums;
 
 namespace Smart_ELearning.ViewModels.Test
 {

@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Smart_ELearning.Data;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
 using Smart_ELearning.ViewModels.Attendance;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Smart_ELearning.Services
 {
@@ -30,17 +27,16 @@ namespace Smart_ELearning.Services
             foreach (var item in request)
             {
                 var studentAttendance = await _context.StudentAttendanceModels
-                .FindAsync(item.AttendanceId);
+                    .FindAsync(item.AttendanceId);
                 if (item.Status == "Absent")
-                {
-                    if (studentAttendance.IsPresent == true) studentAttendance.IsPresent = false;
-                }
+                    if (studentAttendance.IsPresent)
+                        studentAttendance.IsPresent = false;
                 if (item.Status == "Present")
-                {
-                    if (studentAttendance.IsPresent == false) studentAttendance.IsPresent = true;
-                }
+                    if (studentAttendance.IsPresent == false)
+                        studentAttendance.IsPresent = true;
                 _context.Entry(studentAttendance).State = EntityState.Modified;
             }
+
             return await _context.SaveChangesAsync();
 
             //_context.Entry<StudentAttendanceModel>(studentAttendance).State = EntityState.Detached;
@@ -59,7 +55,7 @@ namespace Smart_ELearning.Services
                 .Where(x => x.UserId == userId)
                 .Count();
 
-            return noOfSumitted.ToString() + "/" + noOfTest.ToString();
+            return noOfSumitted + "/" + noOfTest;
         }
 
         //public int CheckNumberOfSubmit(int scheduleId, string userId)
@@ -74,15 +70,16 @@ namespace Smart_ELearning.Services
             var studenntAttendance = new List<StudentAttendanceModel>();
             foreach (var studentId in studentIds)
             {
-                var studentAttendance = new StudentAttendanceModel()
+                var studentAttendance = new StudentAttendanceModel
                 {
                     UserId = studentId,
                     ScheduleId = scheduleId,
                     SubmitId = 0,
-                    IsPresent = false,
+                    IsPresent = false
                 };
                 studenntAttendance.Add(studentAttendance);
             }
+
             _context.StudentAttendanceModels.AddRange(studenntAttendance);
             _context.SaveChanges();
         }
@@ -132,20 +129,17 @@ namespace Smart_ELearning.Services
             //    Time = x.ScheduleModels.Select(x => x.StartTime.ToString("hh:mm")) + "-" + x.ScheduleModels.Select(x => x.EndTime.ToString("hh:mm")),
             //}).ToListAsync();
 
-            var models = await query.Select(x => new ClassAttendanceVm()
+            var models = await query.Select(x => new ClassAttendanceVm
             {
                 ScheduleId = x.Id,
                 ClassName = x.ClassModel.Name,
                 ScheduleTile = x.Title,
                 Subject = x.SubjectModel.Name,
                 Date = x.DateTime.Date.ToString(),
-                Time = x.StartTime.ToString("hh:mm") + "-" + x.EndTime.ToString("hh:mm"),
+                Time = x.StartTime.ToString("hh:mm") + "-" + x.EndTime.ToString("hh:mm")
                 //Status = this.TakeAttendanceStatus(x.DateTime)
             }).ToListAsync();
-            foreach (var model in models)
-            {
-                model.Status = this.TakeAttendanceStatus(DateTime.Parse(model.Date));
-            }
+            foreach (var model in models) model.Status = TakeAttendanceStatus(DateTime.Parse(model.Date));
 
             return models;
         }
@@ -158,23 +152,29 @@ namespace Smart_ELearning.Services
             foreach (var item in attendances)
             {
                 var student = _context.AppUserModels.Find(item.UserId);
-                var record = new ScheduleAttendanceVm()
+                var record = new ScheduleAttendanceVm
                 {
                     AttendanceId = item.Id,
                     ScheduleId = scheduleId,
                     StudentName = student.FullName,
-                    SpecificId = "SL" + student.SpecificId.ToString(),
-                    SubmitInRequire = this.CheckNumberOfSubmit(scheduleId, item.UserId),
-                    IsPresent = item.IsPresent,
+                    SpecificId = "SL" + student.SpecificId,
+                    SubmitInRequire = CheckNumberOfSubmit(scheduleId, item.UserId),
+                    IsPresent = item.IsPresent
                 };
                 if (item.IsPresent == false)
                 {
                     if (DateTime.Now.Date < scheduleDate.Date) record.Status = "Future";
                     else record.Status = "Absent";
                 }
-                else { record.Status = "Present"; };
+                else
+                {
+                    record.Status = "Present";
+                }
+
+                ;
                 models.Add(record);
             }
+
             return models;
         }
 
@@ -212,10 +212,7 @@ namespace Smart_ELearning.Services
 
         public string TakeAttendanceStatus(DateTime date)
         {
-            if (DateTime.Now.Date < date.Date)
-            {
-                return "Future";
-            }
+            if (DateTime.Now.Date < date.Date) return "Future";
             return "Avaliale";
         }
     }

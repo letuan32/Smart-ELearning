@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Smart_ELearning.Data;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Smart_ELearning.Services
 {
@@ -26,30 +23,27 @@ namespace Smart_ELearning.Services
 
         public int CheckFakeAddress()
         {
-            string userIp = this.GetIpAddress();
-            int isFake = 0;
-            string userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIp = GetIpAddress();
+            var isFake = 0;
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.AppUserModels.Find(userId);
             // Check if Ip in white list
             var isInIpList = _context.IpInfos.FirstOrDefault(x => x.StudentId == user.SpecificId && x.Ip == userIp);
-            if (isInIpList != null && isInIpList.IsBlock != true)
-            {
-                return 0;
-            }
+            if (isInIpList != null && isInIpList.IsBlock != true) return 0;
 
-            string info = new WebClient().DownloadString("https://v2.api.iphub.info/guest/ip/" + userIp + "?c=Fae9gi8a");
+            var info = new WebClient().DownloadString("https://v2.api.iphub.info/guest/ip/" + userIp + "?c=Fae9gi8a");
             var ipInfo = JsonConvert.DeserializeObject<dynamic>(info);
             if (ipInfo.block == 1 || ipInfo.block == 2)
             {
                 isFake = 1;
                 if (isInIpList == null)
                 {
-                    var model = new IpInfo()
+                    var model = new IpInfo
                     {
                         Ip = userIp,
                         StudentId = user.SpecificId,
                         IsBlock = true,
-                        LimitAccount = 0,
+                        LimitAccount = 0
                     };
                     _context.IpInfos.Add(model);
                     _context.SaveChanges();
@@ -74,7 +68,7 @@ namespace Smart_ELearning.Services
 
         public string GetIpAddress()
         {
-            string userIp = "unknow";
+            var userIp = "unknow";
             try
             {
                 userIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -82,14 +76,15 @@ namespace Smart_ELearning.Services
             catch (Exception ex)
             {
             }
+
             return userIp;
         }
 
         public int IsDuplicate(int testId)
         {
-            int isDuplicate = 0;
-            string userIp = this.GetIpAddress();
-            string userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isDuplicate = 0;
+            var userIp = GetIpAddress();
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _context.AppUserModels.Find(userId);
 
             var record = _context.submitModels.Where(x => x.TestId == testId)
@@ -103,23 +98,19 @@ namespace Smart_ELearning.Services
 
             var isWhiteList = _context.IpInfos.FirstOrDefault(x => x.StudentId == user.SpecificId && x.Ip == userIp);
             if (isWhiteList != null && isWhiteList.IsBlock == false)
-            {
                 foreach (var item in record)
-                {
                     if (item.UserId == userId)
                         return 1;
-                }
-            }
-            if (isWhiteList != null && isWhiteList.IsBlock == true)
+            if (isWhiteList != null && isWhiteList.IsBlock)
                 return isDuplicate = 1;
             if (isWhiteList == null)
             {
-                var model = new IpInfo()
+                var model = new IpInfo
                 {
                     Ip = userIp,
                     StudentId = user.SpecificId,
                     IsBlock = true,
-                    LimitAccount = 0,
+                    LimitAccount = 0
                 };
                 _context.IpInfos.Add(model);
                 _context.SaveChanges();

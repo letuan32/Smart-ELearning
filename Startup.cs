@@ -1,21 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Smart_ELearning.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Smart_ELearning.Data;
+using Smart_ELearning.Data.Initializer;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services;
-using Smart_ELearning.Data.Initializer;
-using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Smart_ELearning
 {
@@ -35,17 +30,17 @@ namespace Smart_ELearning
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            //Cycal
+            //Cycle
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 );
             services.AddSession();
 
             services.AddIdentity<AppUserModel, IdentityRole>()
-                       .AddDefaultUI()
-                       .AddEntityFrameworkStores<ApplicationDbContext>()
-                                       .AddDefaultTokenProviders();
+                .AddDefaultUI()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
             services.AddControllersWithViews();
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddService();
@@ -65,6 +60,7 @@ namespace Smart_ELearning
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -82,8 +78,8 @@ namespace Smart_ELearning
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{area=Unauthenticated}/{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{area=Unauthenticated}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

@@ -6,7 +6,6 @@ namespace Smart_ELearning.ViewModels
 {
     public class SubmitTestVM
     {
-        
         public string TestTitle { get; set; }
         public int TestId { get; set; }
         public int QuestionId { get; set; }

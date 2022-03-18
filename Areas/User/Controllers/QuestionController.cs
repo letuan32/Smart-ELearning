@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Smart_ELearning.Areas.User.Controllers
 {
@@ -34,11 +33,8 @@ namespace Smart_ELearning.Areas.User.Controllers
 
         public async Task<IActionResult> Upsert(int? id)
         {
-            QuestionModel model = new QuestionModel();
-            if (id == null)
-            {
-                return View(model);
-            }
+            var model = new QuestionModel();
+            if (id == null) return View(model);
             var questionId = id.Value;
             model = await _questionService.GetById(questionId);
             return View(model);
@@ -47,15 +43,9 @@ namespace Smart_ELearning.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> Upsert(QuestionModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
             var result = await _questionService.Upsert(model);
-            if (result == 0)
-            {
-                return View(model);
-            }
+            if (result == 0) return View(model);
             return RedirectToAction(nameof(Index));
             //return RedirectToAction("StudentInClass", new { id = request.ClassId });
         }
@@ -79,11 +69,12 @@ namespace Smart_ELearning.Areas.User.Controllers
 
         {
             var models = new List<QuestionModel>();
-            for (int i = 0; i < numberOfQuestion; i++)
+            for (var i = 0; i < numberOfQuestion; i++)
             {
-                var model = new QuestionModel() { TestId = testId };
+                var model = new QuestionModel {TestId = testId};
                 models.Add(model);
             }
+
             //ViewBag.TestId = testId;
             ViewBag.NumberOfQuestion = numberOfQuestion;
             //ViewBag.TestTile = testTitle;
@@ -96,7 +87,7 @@ namespace Smart_ELearning.Areas.User.Controllers
             var result = await _questionService.AddRange(models.ToList());
             var scheduleId = _testService.GetById(models[0].TestId).ScheduleId;
 
-            return RedirectToAction("ScheduleToTest", "Schedule", new { id = scheduleId });
+            return RedirectToAction("ScheduleToTest", "Schedule", new {id = scheduleId});
         }
 
         public IActionResult EditQuestion(int testId)
@@ -110,7 +101,7 @@ namespace Smart_ELearning.Areas.User.Controllers
         {
             var result = await _questionService.UpdateRange(models);
             var scheduleId = _testService.GetById(models[0].TestId).ScheduleId;
-            return RedirectToAction("ScheduleToTest", "Schedule", new { id = scheduleId });
+            return RedirectToAction("ScheduleToTest", "Schedule", new {id = scheduleId});
         }
     }
 }

@@ -3,13 +3,13 @@
 @{
     ViewData["Title"] = "TestQuestion";
 }
-@{ int index = 1;}
+@{ var index = 1; }
 
 <div>
 
     <h3>Test Title: @Model.Title</h3>
 
-    <hr />
+    <hr/>
     @foreach (var item in Model.question)
     {
         <div class="row">
@@ -64,7 +64,7 @@
             <div class="col-sm-2">
             </div>
         </div>
-        <hr style="font-size:5px;" />
+        <hr style="font-size:5px;"/>
     }
 </div>
 <div>

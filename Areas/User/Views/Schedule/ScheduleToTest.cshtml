@@ -3,7 +3,7 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{ var classId = ViewBag.ClassId;}
+@{ var classId = ViewBag.ClassId; }
 <br>
 <div class="p-4 border rounded bg-white">
     <div class="row">
@@ -11,29 +11,30 @@
             <h2 class="text-primary">Test for Lesson: @ViewBag.ScheduleName </h2>
             <div>
                 <p>
-                    <a href="@Url.Action("Index","Class") class=" fas fa-long-arrow-alt-left>Class</a>/
-                    <a href="@Url.Action("ClassSchedule","Schedule", new {classId=classId })">Schedule</a>/
+                    <a href="@Url.Action("Index", "Class") class=" fas fa-long-arrow-alt-left>Class</a>/
+                    <a href="@Url.Action("ClassSchedule", "Schedule", new {classId})">Schedule</a>/
                 </p>
             </div>
         </div>
         <div class="col-6 text-right">
-            <a class="btn btn-primary" href="@Url.Action("CreateTestToSchedule","Test",new {scheduleId=ViewBag.ScheduleId})"><i class="fas fa-plus"></i> &nbsp;New Test</a>
+            <a class="btn btn-primary" href="@Url.Action("CreateTestToSchedule", "Test", new {scheduleId = ViewBag.ScheduleId})"><i class="fas fa-plus"></i> &nbsp;New Test</a>
         </div>
     </div>
     <br>
     <br>
     <table id="tblData" class="table table-striped table-bordered" style="width:100%">
         <thead class="thead-dark">
-            <tr class="table-info">
-                <th>Title</th>
-                <th>Questions</th>
-                <th>Status</th>
+        <tr class="table-info">
+            <th>Title</th>
+            <th>Questions</th>
+            <th>Status</th>
 
-                <th></th>
-            </tr>
+            <th></th>
+        </tr>
         </thead>
     </table>
 </div>
+
 @section Scripts{
     <script>
         var dataTable;

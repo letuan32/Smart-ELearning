@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Smart_ELearning.Migrations
 {
-    public partial class @new : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,6 +18,22 @@ namespace Smart_ELearning.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Classes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IpInfos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Ip = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsBlock = table.Column<bool>(type: "bit", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    LimitAccount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IpInfos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -354,7 +370,7 @@ namespace Smart_ELearning.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SubmitId = table.Column<int>(type: "int", nullable: false),
                     QuestionId = table.Column<int>(type: "int", nullable: false),
-                    StudentAnswer = table.Column<int>(type: "int", nullable: false)
+                    StudentAnswer = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -486,6 +502,9 @@ namespace Smart_ELearning.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Submits_Testes_TestId",
                 table: "Submits");
+
+            migrationBuilder.DropTable(
+                name: "IpInfos");
 
             migrationBuilder.DropTable(
                 name: "Questions");
