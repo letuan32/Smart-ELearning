@@ -1,5 +1,5 @@
 ## Introduction
-The Smart E-Learning project develops with the goal of saving time, improving the quality of online teaching and learning.
+The Smart E-Learning web application is developed with the goal of saving time, improving the quality of online teaching and learning.
 Features:
 - 📒 Management resource (Subjects, classes, schedules, attendance report, etc. )
 - 📄 Create multiple-choice tests.
