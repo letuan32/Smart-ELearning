@@ -1,0 +1,178 @@
+﻿@model Smart_ELearning.ViewModels.AccountViewModels.StudentInClassVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{ var classId = ViewBag.ClassId;}
+<br>
+<div class="p-4 border rounded bg-white">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-primary">Test for Lesson: @ViewBag.ScheduleName </h2>
+            <div>
+                <p>
+                    <a href="@Url.Action("Index","Class") class=" fas fa-long-arrow-alt-left>Class</a>/
+                    <a href="@Url.Action("ClassSchedule","Schedule", new {classId=classId })">Schedule</a>/
+                </p>
+            </div>
+        </div>
+        <div class="col-6 text-right">
+            <a class="btn btn-primary" href="@Url.Action("CreateTestToSchedule","Test",new {scheduleId=ViewBag.ScheduleId})"><i class="fas fa-plus"></i> &nbsp;New Test</a>
+        </div>
+    </div>
+    <br>
+    <br>
+    <table id="tblData" class="table table-striped table-bordered" style="width:100%">
+        <thead class="thead-dark">
+            <tr class="table-info">
+                <th>Title</th>
+                <th>Questions</th>
+                <th>Status</th>
+
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section Scripts{
+    <script>
+        var dataTable;
+        var classId = @ViewBag.ScheduleId;
+        console.log(classId);
+
+        $(document).ready(function () {
+            loadDataTable();
+        });
+
+        function loadDataTable() {
+            dataTable = $('#tblData').DataTable({
+                "order": [],
+                "aaSorting": [],
+                "ajax": {
+                    "url": "/user/schedule/getscheduletotest/"+classId,
+                    "type": "GET",
+                    "dataType": "json",
+                    // "data": JSON.stringify({ idclass:classId })
+                },
+                "columns": [
+                    { "data": "title", "width":"10%" },
+                    { "data": "numberOfQuestion" ,"width":"5%"},
+                    { "data": "status","width":"5%" },
+                    {
+                        "data": {
+                            id: "id", status: "status"
+                        },
+                        "render": function (data) {
+                            if (data.status == "Close") {
+                                return `
+                            <div class="text-center">
+                                <a onclick=OpenClose("/User/Test/ChangeTestStatus/${data.id}") class="btn btn-primary text-white " style="cursor:pointer">
+                                    <i class="fas fa-unlock"> Click to Open</i>
+                                </a>
+                                 <button class="btn btn-primary text-white" onclick=setClipboard("/User/Test/TestForm/?testid=${data.id}")>
+                                    <i class="fas fa-link"> Link</i></button>
+
+                                <a href="/User/Test/TestResult/${data.id}" class="btn btn-primary text-white" style="cursor:pointer">
+                                                        <i class="fas fa-edit"> Submision</i>
+                                 </a>
+
+                                 <a href="/User/Test/TestQuestion/?testId=${data.id}" class="btn btn-primary text-white" style="cursor:pointer">
+                                       <i class="fas fa-edit"> Questions</i>
+                                 </a>
+                                <a href="/User/Question/EditQuestion/?testId=${data.id}" class="btn btn-primary text-white " style="cursor:pointer">
+                                    <i class="fas fa-edit">Edit</i>
+                                </a>
+                                                        <a onclick=Delete("/User/Test/Delete/${data.id}") class="btn btn-danger text-white" style="cursor:pointer">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                            </div>
+                           `;
+                            } else {
+                                return `
+                            <div class="text-center">
+                                <a onclick=OpenClose("/User/Test/ChangeTestStatus/${data.id}") class="btn btn-danger text-white " style="cursor:pointer">
+                                    <i class="fas fa-lock"> Click to Close</i>
+                                </a>
+                                 <button class="btn btn-primary text-white" onclick=setClipboard("/User/Test/TestForm/?testid=${data.id}")>
+                                    <i class="fas fa-link"> Link</i></button>
+
+                                <a href="/User/Test/TestResult/${data.id}" class="btn btn-primary text-white" style="cursor:pointer">
+                                                        <i class="fas fa-edit"> Submision</i>
+                                 </a>
+
+                                 <a href="/User/Test/TestQuestion/?testId=${data.id}" class="btn btn-primary text-white" style="cursor:pointer">
+                                       <i class="fas fa-edit"> Questions</i>
+                                 </a>
+                                <a href="/User/Question/EditQuestion/?testId=${data.id}" class="btn btn-primary text-white " style="cursor:pointer">
+                                    <i class="fas fa-edit">Edit</i>
+                                </a>
+                                                        <a onclick=Delete("/User/Test/Delete/${data.id}") class="btn btn-danger text-white" style="cursor:pointer">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+                                    </div>
+
+                                    `;
+                            }
+                        }
+
+                             ,"width": "60%"
+                    },
+
+                ]
+            });
+        }
+
+        function Delete(url) {
+            swal({
+                title: "Are you sure you want to Delete?",
+                text: "You will not be able to restore the data!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: url,
+                        success: function (data) {
+                            if (data.success) {
+                                toastr.success(data.message);
+                                dataTable.ajax.reload();
+                            }
+                            else {
+                                toastr.error(data.message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function setClipboard(value) {
+            var tempInput = document.createElement("input");
+            var hostName = window.location.hostname;
+            tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+            tempInput.value = window.location.host+value;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+        }
+        function OpenClose(url) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        dataTable.ajax.reload();
+                    }
+                    else {
+                        toastr.error(data.message);
+                    }
+                }
+            });
+        }
+    </script>
+}

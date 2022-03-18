@@ -1,0 +1,108 @@
+﻿@model Smart_ELearning.ViewModels.ScheduleViewModel
+@{
+    ViewData["Title"] = "Upsert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var title = "Create Schedule";
+}
+
+<form method="post" autocomplete="off">
+    <div class="row p-3 border">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.ScheduleModel.Id != 0)
+        {
+            title = "Edit Schedule";
+        }
+        <div class="col-12 border-bottom">
+            <h2 class="text-primary">@title</h2>
+        </div>
+        <div class="col-8 pt-4">
+            @if (Model.ScheduleModel.ClassId != 0)
+            {
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Class:</label>
+                    </div>
+                    <div class="col-8">
+                        <input type="hidden" readonly asp-for="ScheduleModel.ClassId" />
+                        <input readonly value="@ViewBag.ClassName" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="ScheduleModel.ClassId"></label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DropDownListFor(m => m.ScheduleModel.ClassId, Model.ClassListItems, "-Select a Class", new { @class = "form-control" })
+                        <span asp-validation-for="ScheduleModel.ClassId" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ScheduleModel.SubjectId"></label>
+                </div>
+                <div class="col-8">
+                    @Html.DropDownListFor(m => m.ScheduleModel.SubjectId, Model.SubjectListItems, "-Select a Subject", new { @class = "form-control" })
+                    <span asp-validation-for="ScheduleModel.SubjectId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ScheduleModel.Title"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="ScheduleModel.Title" class="form-control" />
+                    <span asp-validation-for="ScheduleModel.Title" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ScheduleModel.DateTime"></label>
+                </div>
+                <div class="col-8">
+                    <input type="date" asp-for="ScheduleModel.DateTime" class="form-control" />
+                    <span asp-validation-for="ScheduleModel.DateTime" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ScheduleModel.StartTime"></label>
+                </div>
+                <div class="col-8">
+                    <input type="time" step="3600000" asp-for="ScheduleModel.StartTime" class="form-control" />
+                    <span asp-validation-for="ScheduleModel.StartTime" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="ScheduleModel.EndTime"></label>
+                </div>
+                <div class="col-8">
+                    <input type="time" step="3600000" asp-for="ScheduleModel.EndTime" class="form-control" />
+                    <span asp-validation-for="ScheduleModel.EndTime" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-8 offset-4">
+
+                    @if (Model.ScheduleModel.Id != 0)
+                    {
+                        <partial name="_EditAndBackToListButton" model="Model.ScheduleModel.Id" />
+                    }
+                    else
+                    {
+                        <partial name="_CreateAndBackToListButton" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
