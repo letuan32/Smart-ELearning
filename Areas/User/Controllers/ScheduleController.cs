@@ -1,15 +1,13 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Smart_ELearning.Data;
-using Smart_ELearning.Models;
-using Smart_ELearning.Services;
-using Smart_ELearning.Services.Interfaces;
-using Smart_ELearning.ViewModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Smart_ELearning.Data;
+using Smart_ELearning.Models;
+using Smart_ELearning.Services.Interfaces;
+using Smart_ELearning.ViewModels;
 
 namespace Smart_ELearning.Areas.User.Controllers
 {
@@ -17,12 +15,13 @@ namespace Smart_ELearning.Areas.User.Controllers
     [Authorize(Roles = "Teacher")]
     public class ScheduleController : Controller
     {
-        private readonly IScheduleService _schedule;
-        private readonly ISubjectService _subject;
         private readonly IClassService _classService;
         private readonly ApplicationDbContext _context;
+        private readonly IScheduleService _schedule;
+        private readonly ISubjectService _subject;
 
-        public ScheduleController(IScheduleService schedule, IClassService classService, ISubjectService subject, ApplicationDbContext context)
+        public ScheduleController(IScheduleService schedule, IClassService classService, ISubjectService subject,
+            ApplicationDbContext context)
         {
             _schedule = schedule;
             _classService = classService;
@@ -37,11 +36,11 @@ namespace Smart_ELearning.Areas.User.Controllers
 
         public IActionResult Upsert(int? id, int? classId)
         {
-            ScheduleViewModel scheduleViewModel = new ScheduleViewModel
+            var scheduleViewModel = new ScheduleViewModel
             {
-                ScheduleModel = new ScheduleModel()
+                ScheduleModel = new ScheduleModel
                 {
-                    DateTime = DateTime.Now.Date,
+                    DateTime = DateTime.Now.Date
                 },
                 ClassListItems = _classService.GetAll().Select(i => new SelectListItem
                 {
@@ -67,6 +66,7 @@ namespace Smart_ELearning.Areas.User.Controllers
 
                 return View(scheduleViewModel);
             }
+
             scheduleViewModel.ScheduleModel = _schedule.GetById(id);
             return View(scheduleViewModel);
         }
@@ -79,32 +79,27 @@ namespace Smart_ELearning.Areas.User.Controllers
             ViewBag.ScheduleName = classFromDb.Title;
             return View();
         }
+
         [HttpGet]
         public IActionResult GetScheduleToTest(int id)
         {
             var obj = _schedule.GetScheduleToTest(id);
-            return Json(new { data = obj });
+            return Json(new {data = obj});
         }
+
         [HttpPost]
         public IActionResult LockUnlock([FromBody] int id)
         {
             var ojbFromdb = _context.TestModels.FirstOrDefault(u => u.Id == id);
-            if (ojbFromdb == null)
-            {
-                return Json(new { success = false, Message = "Error While Lock/Unlock" });
-            }
+            if (ojbFromdb == null) return Json(new {success = false, Message = "Error While Lock/Unlock"});
 
             if (ojbFromdb.LockoutEnd != null && ojbFromdb.LockoutEnd > DateTime.Now)
-            {
                 ojbFromdb.LockoutEnd = DateTime.Now;
-            }
             else
-            {
                 ojbFromdb.LockoutEnd = DateTime.Now.AddYears(1000);
-            }
 
             _context.SaveChanges();
-            return Json(new { success = true, Message = "Success" });
+            return Json(new {success = true, Message = "Success"});
         }
 
         public async Task<IActionResult> ClassSchedule(int? classId)
@@ -121,52 +116,42 @@ namespace Smart_ELearning.Areas.User.Controllers
         public IActionResult GetClassSchedule(int id)
         {
             var data = _schedule.GetClassSchedule(id);
-            return Json(new { data = data });
+            return Json(new {data});
         }
 
-        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Upsert(ScheduleViewModel scheduleViewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(scheduleViewModel);
-            }
+            if (!ModelState.IsValid) return View(scheduleViewModel);
             var obj = _schedule.Upsert(scheduleViewModel);
-            if (obj == 0)
-            {
-                return View(scheduleViewModel);
-            }
-            return RedirectToAction("ClassSchedule", new { classId = scheduleViewModel.ScheduleModel.ClassId });
+            if (obj == 0) return View(scheduleViewModel);
+            return RedirectToAction("ClassSchedule", new {classId = scheduleViewModel.ScheduleModel.ClassId});
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
+        [HttpGet]
         public IActionResult GetAll()
         {
             var allObj = _schedule.GetAll();
-            return Json(new { data = allObj });
+            return Json(new {data = allObj});
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
+        [HttpGet]
         public IActionResult GetDisplay()
         {
             var allObj = _schedule.GetDisplay();
-            return Json(new { data = allObj });
+            return Json(new {data = allObj});
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpDelete]
+        [HttpDelete]
         public IActionResult Delete(int id)
         {
             var objFromDb = _schedule.GetById(id);
-            if (objFromDb == null)
-            {
-                return Json(new { success = false, message = "Error while deleting" });
-            }
+            if (objFromDb == null) return Json(new {success = false, message = "Error while deleting"});
 
             _schedule.Delete(id);
-            return Json(new { success = true, message = "Delete Successful" });
+            return Json(new {success = true, message = "Delete Successful"});
         }
 
         #endregion APICall

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Smart_ELearning.Data;
 using Smart_ELearning.Models;
 using Smart_ELearning.Services.Interfaces;
-
 using Smart_ELearning.ViewModels;
 using Smart_ELearning.ViewModels.ScheduleViewModels;
 
@@ -14,8 +12,8 @@ namespace Smart_ELearning.Services
 {
     public class ScheduleService : IScheduleService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IAttendanceService _attendanceService;
+        private readonly ApplicationDbContext _context;
 
         public ScheduleService(ApplicationDbContext context,
             IAttendanceService attendanceService)
@@ -41,12 +39,13 @@ namespace Smart_ELearning.Services
             else
             {
                 var scheduleFromDb = _context.ScheduleModels.Find(model.ScheduleModel.Id);
-                if (scheduleFromDb == null) throw new Exception($"Could not found class id{model.ScheduleModel.Id}");
-                else
+                if (scheduleFromDb == null)
                 {
-                    _context.Entry<ScheduleModel>(scheduleFromDb).State = EntityState.Detached;
-                    _context.Entry<ScheduleModel>(model.ScheduleModel).State = EntityState.Modified;
+                    throw new Exception($"Could not found class id{model.ScheduleModel.Id}");
                 }
+
+                _context.Entry(scheduleFromDb).State = EntityState.Detached;
+                _context.Entry(model.ScheduleModel).State = EntityState.Modified;
             }
 
             var result = _context.SaveChanges();
@@ -66,21 +65,20 @@ namespace Smart_ELearning.Services
         ScheduleModel IScheduleService.GetById(int? Id)
         {
             var scheduleFromDb = _context.ScheduleModels.Find(Id);
-            if (scheduleFromDb == null) throw new Exception($"Not Found");
+            if (scheduleFromDb == null) throw new Exception("Not Found");
             return scheduleFromDb;
         }
 
         public List<TestToScheduleViewModel> GetScheduleToTest(int scheduleid)
         {
             var obj = _context.TestModels.Where(x => x.ScheduleId == scheduleid).AsQueryable();
-            var objlist = obj.Select(x => new TestToScheduleViewModel()
+            var objlist = obj.Select(x => new TestToScheduleViewModel
             {
                 Id = x.Id,
                 Title = x.Title,
                 NumberOfQuestion = x.NumberOfQuestion,
-                lockoutEnd =  x.LockoutEnd,
-                Status = x.Status ? "Open" : "Close",
-
+                lockoutEnd = x.LockoutEnd,
+                Status = x.Status ? "Open" : "Close"
             });
             return objlist.ToList();
         }
@@ -88,7 +86,7 @@ namespace Smart_ELearning.Services
         public List<ScheduleVM> GetDisplay()
         {
             var query = _context.ScheduleModels.Include(x => x.ClassModel).Include(x => x.SubjectModel).AsQueryable();
-            var list = query.Select(x => new ScheduleVM()
+            var list = query.Select(x => new ScheduleVM
             {
                 Id = x.Id,
                 DateTime = x.DateTime.ToString("dddd, dd MMMM yyyy"),
@@ -96,7 +94,7 @@ namespace Smart_ELearning.Services
                 EndTime = x.EndTime.ToString("HH:mm"),
                 ClassName = x.ClassModel.Name,
                 SubjectName = x.SubjectModel.Name,
-                Title = x.Title,
+                Title = x.Title
             }).ToList();
 
             return list;
@@ -108,13 +106,13 @@ namespace Smart_ELearning.Services
             var query = _context.ScheduleModels.Include(x => x.ClassModel)
                 .Include(x => x.SubjectModel)
                 .Where(x => x.ClassId == classId)
-                .OrderBy(x=>x.DateTime)
-                .ThenBy(x=>x.StartTime)
+                .OrderBy(x => x.DateTime)
+                .ThenBy(x => x.StartTime)
                 .AsQueryable();
 
-            foreach(var x in query)
+            foreach (var x in query)
             {
-                var model = new ScheduleVM()
+                var model = new ScheduleVM
                 {
                     Id = x.Id,
                     DateTime = x.DateTime.ToString("ddd, dd MMM yyyy"),
@@ -122,10 +120,10 @@ namespace Smart_ELearning.Services
                     EndTime = x.EndTime.ToString("HH:mm"),
                     ClassName = x.ClassModel.Name,
                     SubjectName = x.SubjectModel.Name,
-                    Title = x.Title,
+                    Title = x.Title
                 };
                 list.Add(model);
-            }    
+            }
             //var list = query.Select(x => new ScheduleVM()
             //{
             //    Id = x.Id,

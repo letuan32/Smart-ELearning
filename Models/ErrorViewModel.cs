@@ -1,5 +1,3 @@
-using System;
-
 namespace Smart_ELearning.Models
 {
     public class ErrorViewModel

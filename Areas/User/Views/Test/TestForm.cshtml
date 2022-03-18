@@ -13,36 +13,47 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="NumberOfQuestion" />
-                <input type="hidden" asp-for="TestId" />
-                <input type="hidden" asp-for="ScheduleId" />
-                <input type="hidden" asp-for="StudentIp" value="@ViewBag.StudentIp" />
+                <input type="hidden" asp-for="NumberOfQuestion"/>
+                <input type="hidden" asp-for="TestId"/>
+                <input type="hidden" asp-for="ScheduleId"/>
+                <input type="hidden" asp-for="StudentIp" value="@ViewBag.StudentIp"/>
 
                 <div class="col-12 border-bottom">
                     <h2 class="text">@Model.TestTitle</h2>
                 </div>
                 <div class="modal-body">
 
-                    @for (int i = 0; i < Model.NumberOfQuestion; i++)
+                    @for (var i = 0; i < Model.NumberOfQuestion; i++)
                     {
+                        <input type="hidden" asp-for="@Model.QuestionsResult[i].CorrectAnswer"/>
+                        <input type="hidden" asp-for="@Model.QuestionsResult[i].Id"/>
+                        <input type="hidden" asp-for="@Model.QuestionsResult[i].TestId"/>
+                        <input type="hidden" asp-for="@Model.QuestionsResult[i].Score"/>
 
-                        <input type="hidden" asp-for="@Model.QuestionsResult[i].CorrectAnswer" />
-                        <input type="hidden" asp-for="@Model.QuestionsResult[i].Id" />
-                        <input type="hidden" asp-for="@Model.QuestionsResult[i].TestId" />
-                        <input type="hidden" asp-for="@Model.QuestionsResult[i].Score" />
-
-                        <h4><strong>Question @(i + 1)</strong></h4>
-                        <div class="py-2 h5"><span style="white-space: pre-line">@Model.QuestionsResult[i].Content</span></div>
+                        <h4>
+                            <strong>Question @(i + 1)</strong>
+                        </h4>
+                        <div class="py-2 h5">
+                            <span style="white-space: pre-line">@Model.QuestionsResult[i].Content</span>
+                        </div>
 
                         @*<div class="py-2 h5"><p>@Model.QuestionsResult[i].Content.Replace(Environment.NewLine, "<br />")</p></div>*@
                         <div class="quiz" id="quiz" data-toggle="buttons">
                             @Model.QuestionsResult[i].StudentAnswer
-                            <label class="element-animation1 btn btn-lg btn-secondary btn-block"><span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceA</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="A"> </label>
-                            <label class="element-animation1 btn btn-lg btn-secondary btn-block"><span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceB</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="B"> </label>
-                            <label class="element-animation1 btn btn-lg btn-secondary btn-block"><span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceC</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="C"></label>
-                            <label class="element-animation1 btn btn-lg btn-secondary btn-block"><span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceD</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="D"> </label>
+                            <label class="element-animation1 btn btn-lg btn-secondary btn-block">
+                                <span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceA</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="A">
+                            </label>
+                            <label class="element-animation1 btn btn-lg btn-secondary btn-block">
+                                <span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceB</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="B">
+                            </label>
+                            <label class="element-animation1 btn btn-lg btn-secondary btn-block">
+                                <span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceC</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="C">
+                            </label>
+                            <label class="element-animation1 btn btn-lg btn-secondary btn-block">
+                                <span style="white-space: pre-line" class="btn-label">@Model.QuestionsResult[i].ChoiceD</span> <input type="radio" asp-for="@Model.QuestionsResult[i].StudentAnswer" value="D">
+                            </label>
                         </div>
-                        <hr />
+                        <hr/>
                     }
                 </div>
                 <input type="submit" value="Submit" class="text-center btn-success">

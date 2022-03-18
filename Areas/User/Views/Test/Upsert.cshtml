@@ -18,7 +18,7 @@
                     <label asp-for="TestModel.ScheduleId"></label>
                 </div>
                 <div class="col-8">
-                    @Html.DropDownListFor(m => m.TestModel.ScheduleId, Model.ScheduleListItems, "-Select a Schedule", new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.TestModel.ScheduleId, Model.ScheduleListItems, "-Select a Schedule", new {@class = "form-control"})
                     <span asp-validation-for="TestModel.ScheduleId" class="text-danger"></span>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                     <label asp-for="TestModel.Title"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="TestModel.Title" class="form-control" />
+                    <input asp-for="TestModel.Title" class="form-control"/>
                     <span asp-validation-for="TestModel.Title" class="text-danger"></span>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <label asp-for="TestModel.NumberOfQuestion"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="TestModel.NumberOfQuestion" class="form-control" />
+                    <input asp-for="TestModel.NumberOfQuestion" class="form-control"/>
                     <span asp-validation-for="TestModel.NumberOfQuestion" class="text-danger"></span>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <label asp-for="TestModel.Status"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="TestModel.Status" class="form-control" />
+                    <input asp-for="TestModel.Status" class="form-control"/>
                     <span asp-validation-for="TestModel.Status" class="text-danger"></span>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                     <label asp-for="TestModel.CorrectAnswerlist"></label>
                 </div>
                 <div class="col-8">
-                    <input asp-for="TestModel.CorrectAnswerlist" class="form-control" />
+                    <input asp-for="TestModel.CorrectAnswerlist" class="form-control"/>
                     <span asp-validation-for="TestModel.CorrectAnswerlist" class="text-danger"></span>
                 </div>
             </div>
@@ -63,18 +63,19 @@
 
                     @if (Model.TestModel.Id != 0)
                     {
-                        <partial name="_EditAndBackToListButton" model="Model.TestModel.Id" />
+                        <partial name="_EditAndBackToListButton" model="Model.TestModel.Id"/>
                     }
                     else
                     {
-                        <partial name="_CreateAndBackToListButton" />
+                        <partial name="_CreateAndBackToListButton"/>
                     }
                 </div>
             </div>
         </div>
     </div>
 </form>
+
 @section Scripts
 {
-    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationScriptsPartial"/>
 }

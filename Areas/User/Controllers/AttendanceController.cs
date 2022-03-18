@@ -1,19 +1,11 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Smart_ELearning.Data;
-using Smart_ELearning.Models;
-using Smart_ELearning.Services;
-using Smart_ELearning.Services.Interfaces;
-using Smart_ELearning.ViewModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using System.Threading.Tasks;
-using Smart_ELearning.ViewModels.Test;
-using Smart_ELearning.ViewModels.Attendance;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Smart_ELearning.Data;
+using Smart_ELearning.Services.Interfaces;
+using Smart_ELearning.ViewModels.Attendance;
 
 namespace Smart_ELearning.Areas.User.Controllers
 {
@@ -21,12 +13,13 @@ namespace Smart_ELearning.Areas.User.Controllers
     [Authorize(Roles = "Teacher")]
     public class AttendanceController : Controller
     {
-        private readonly ITestService _testService;
-        private readonly IScheduleService _scheduleService;
-        private readonly ApplicationDbContext _context;
         private readonly IAttendanceService _attendanceService;
+        private readonly ApplicationDbContext _context;
+        private readonly IScheduleService _scheduleService;
+        private readonly ITestService _testService;
 
-        public AttendanceController(IAttendanceService attendanceService, ITestService testService, IScheduleService scheduleService, ApplicationDbContext context)
+        public AttendanceController(IAttendanceService attendanceService, ITestService testService,
+            IScheduleService scheduleService, ApplicationDbContext context)
         {
             _testService = testService;
             _scheduleService = scheduleService;
@@ -60,12 +53,11 @@ namespace Smart_ELearning.Areas.User.Controllers
         //     //}
         //     // return RedirectToAction(nameof(Index));
         // }
-
         [HttpGet]
         public IActionResult GetAll()
         {
             var allObj = _testService.GetAll();
-            return Json(new { data = allObj });
+            return Json(new {data = allObj});
         }
 
         public IActionResult ScheduleAttendance(int scheduleId)
@@ -81,7 +73,7 @@ namespace Smart_ELearning.Areas.User.Controllers
         {
             await _attendanceService.ChangeAttendanceStatus(request);
 
-            return RedirectToAction("ScheduleAttendance", "Attendance", new { scheduleId = request[0].ScheduleId });
+            return RedirectToAction("ScheduleAttendance", "Attendance", new {scheduleId = request[0].ScheduleId});
         }
 
         public async Task<IActionResult> ClassAttendance(int classId)

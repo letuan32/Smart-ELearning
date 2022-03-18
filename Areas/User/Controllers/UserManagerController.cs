@@ -24,10 +24,7 @@ namespace Smart_ELearning.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRole(string roleName)
         {
-            if (roleName != null)
-            {
-                await _roleManager.CreateAsync(new IdentityRole(roleName.Trim()));
-            }
+            if (roleName != null) await _roleManager.CreateAsync(new IdentityRole(roleName.Trim()));
             return RedirectToAction("Index");
         }
     }
